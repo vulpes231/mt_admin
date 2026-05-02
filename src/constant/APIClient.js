@@ -1,10 +1,11 @@
 import axios from "axios";
 import { getAccessToken } from "./constant";
 
-const serverUrl = "http://localhost:4000";
+const serverUrl = "http://localhost:3500";
 
 const api = axios.create({
   baseURL: serverUrl,
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -30,6 +31,9 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       console.log("Unauthorized - redirect to login");
+      // Optional: Clear token and redirect
+      // localStorage.removeItem("token");
+      // window.location.href = "/login";
     }
     return Promise.reject(error);
   },

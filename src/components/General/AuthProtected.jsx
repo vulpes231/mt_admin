@@ -8,8 +8,8 @@ import Sidebar from "../Layout/Sidebar";
 const AuthProtected = () => {
   const isAuthenticated = getAccessToken();
 
-  if (isAuthenticated) {
-    return <Navigate to="/login" replace />;
+  if (!isAuthenticated || isAuthenticated === undefined) {
+    return <Navigate to="/" replace />;
   }
 
   return (

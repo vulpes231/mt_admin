@@ -22,12 +22,12 @@ const Users = () => {
         </Link>
       </div>
       <div className="bg-white rounded-md shadow">
-        <div className="flex items-center justify-between p-5">
+        {/* <div className="flex items-center justify-between p-5">
           <h3>Users</h3>
           <span>
             <p>filter by: </p>
           </span>
-        </div>
+        </div> */}
         <UserTable />
       </div>
     </div>

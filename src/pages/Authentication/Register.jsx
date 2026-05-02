@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CustomInput,
   CustomLabel,
@@ -10,9 +10,10 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import authService from "../../services/auth";
 import { useNavigate } from "react-router-dom";
-document.title = "Meta - Admin Register";
+import useTitle from "../../hooks/useTitle";
 
 const Register = () => {
+  useTitle("Meta - Admin Register");
   const navigate = useNavigate();
 
   const [showPass, setShowPass] = React.useState(false);
@@ -40,6 +41,14 @@ const Register = () => {
     },
   });
 
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
   return (
     <div className="bg-slate-100 h-screen flex items-center justify-center">
       <div className="bg-white rounded-md flex flex-col gap-2 p-6 w-md">
@@ -72,8 +81,9 @@ const Register = () => {
           <button
             type="submit"
             className="px-6 py-2 rounded-sm bg-slate-900 text-white mt-4"
+            disabled={enrollAdmin.isPending}
           >
-            Register
+            {enrollAdmin.isPending ? "Registering..." : "Register"}
           </button>
           <small>
             Already have an account? <a href="/">Login now</a>

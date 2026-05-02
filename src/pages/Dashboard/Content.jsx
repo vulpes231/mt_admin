@@ -2,14 +2,30 @@
 
 import { FaPiggyBank, FaUser } from "react-icons/fa6";
 import { MdMoney } from "react-icons/md";
-
-const widgets = [
-  { label: "Users", count: 0, id: "user" },
-  { label: "Transactions", count: 0, id: "trx" },
-  // { label: "Users", count: 0 },
-];
+import transactionService from "../../services/transactionService";
+import { useQuery } from "@tanstack/react-query";
+import { getAccessToken } from "../../constant/constant";
+import manageUser from "../../services/manageUser";
 
 const Content = () => {
+  const token = getAccessToken();
+  const { data: transactions } = useQuery({
+    queryFn: transactionService.getAllTransactions,
+    enabled: !!token,
+    queryKey: ["transactions"],
+  });
+
+  const { data: users } = useQuery({
+    queryFn: manageUser.getAllUsers,
+    enabled: !!token,
+    queryKey: ["users"],
+  });
+
+  const widgets = [
+    { label: "Users", count: users?.length || 0, id: "user" },
+    { label: "Transactions", count: transactions?.length || 0, id: "trx" },
+    // { label: "Users", count: 0 },
+  ];
   const getIcon = (id) => {
     return id === "user" ? <FaUser /> : <FaPiggyBank />;
   };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   CustomInput,
   CustomLabel,
@@ -10,9 +10,10 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import authService from "../../services/auth";
 import { useNavigate } from "react-router-dom";
-document.title = "Meta - Admin Login";
+import useTitle from "../../hooks/useTitle";
 
 const Login = () => {
+  useTitle("Meta - Admin Login");
   const navigate = useNavigate();
 
   const [showPass, setShowPass] = React.useState(false);
@@ -22,10 +23,13 @@ const Login = () => {
     mutationFn: authService.loginAdmin,
     onError: (err) => setError(err.message),
     onSuccess: (data) => {
-      sessionStorage.setItem("token", data.token);
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000);
+      console.log(data);
+      if (data?.token) {
+        sessionStorage.setItem("token", data.token);
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 3000);
+      }
     },
   });
 
@@ -37,9 +41,18 @@ const Login = () => {
     },
     onSubmit: (values) => {
       console.log(values);
-      //   loginAdmin.mutate(values);
+      loginAdmin.mutate(values);
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
 
   return (
     <div className="bg-slate-100 h-screen flex items-center justify-center">
@@ -73,8 +86,9 @@ const Login = () => {
           <button
             type="submit"
             className="px-6 py-2 rounded-sm bg-slate-900 text-white mt-4"
+            disabled={loginAdmin.isPending}
           >
-            Login
+            {loginAdmin.isPending ? "Logging In..." : "Login"}
           </button>
           <small>
             Don't have an account? <a href="/enroll">Register now</a>
