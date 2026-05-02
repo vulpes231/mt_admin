@@ -85,7 +85,7 @@ const Register = () => {
       )}
       {enrollAdmin.isSuccess && (
         <SuccessToast
-          successMsg={"Login Success."}
+          successMsg={"User Creation Success."}
           handleClose={() => enrollAdmin.reset()}
         />
       )}

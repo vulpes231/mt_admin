@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { DashBoard, Login, Register } from "./pages";
+import { DashBoard, Login, Register, Transactions, Users } from "./pages";
 import AuthProtected from "./components/General/AuthProtected";
 
 const App = () => {
@@ -8,14 +8,11 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/enroll" element={<Register />} />
-      <Route
-        path="/dashboard"
-        element={
-          <AuthProtected>
-            <DashBoard />
-          </AuthProtected>
-        }
-      />
+      <Route element={<AuthProtected />}>
+        <Route path="/dashboard" element={<DashBoard />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/transactions" element={<Transactions />} />
+      </Route>
     </Routes>
   );
 };

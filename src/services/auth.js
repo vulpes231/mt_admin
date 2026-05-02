@@ -20,7 +20,7 @@ class authService {
       const response = await api.post(`/logout`);
       return response.data;
     } catch (logoutError) {
-      this.handleError(logoutError, "Failed to login.");
+      this.handleError(logoutError, "Failed to logout.");
     }
   }
 
@@ -29,7 +29,7 @@ class authService {
       const response = await api.post("/enroll", form);
       return response.data;
     } catch (createError) {
-      this.handleError(createError, "Failed to login.");
+      this.handleError(createError, "Failed to register.");
     }
   }
 }
