@@ -1,8 +1,12 @@
-// import React from "react";
+// Dashboard.jsx
+import React from "react";
+
 import Content from "./Content";
-document.title = "Meta - Admin Dashboard";
+import useTitle from "../../hooks/useTitle";
 
 const DashBoard = () => {
+  useTitle("Meta - Admin Dashboard");
+
   return (
     <div>
       <Content />
