@@ -10,21 +10,20 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import authService from "../../services/auth";
 import { useNavigate } from "react-router-dom";
-document.title = "Meta - Admin Login";
+document.title = "Meta - Admin Register";
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   const [showPass, setShowPass] = React.useState(false);
   const [error, setError] = React.useState("");
 
-  const loginAdmin = useMutation({
-    mutationFn: authService.loginAdmin,
+  const enrollAdmin = useMutation({
+    mutationFn: authService.createAdmin,
     onError: (err) => setError(err.message),
-    onSuccess: (data) => {
-      sessionStorage.setItem("token", data.token);
+    onSuccess: () => {
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 3000);
     },
   });
@@ -37,14 +36,14 @@ const Login = () => {
     },
     onSubmit: (values) => {
       console.log(values);
-      //   loginAdmin.mutate(values);
+      enrollAdmin.mutate(values);
     },
   });
 
   return (
     <div className="bg-slate-100 h-screen flex items-center justify-center">
       <div className="bg-white rounded-md flex flex-col gap-2 p-6 w-md">
-        <h4 className="font-semibold text-2xl">Admin Login</h4>
+        <h4 className="font-semibold text-2xl">Create Admin</h4>
         <form
           action=""
           className="flex flex-col gap-2 p-2"
@@ -74,24 +73,24 @@ const Login = () => {
             type="submit"
             className="px-6 py-2 rounded-sm bg-slate-900 text-white mt-4"
           >
-            Login
+            Register
           </button>
           <small>
-            Don't have an account? <a href="/enroll">Register now</a>
+            Already have an account? <a href="/">Login now</a>
           </small>
         </form>
       </div>
       {error && (
         <ErrorToast errorMsg={error} handleClose={() => setError("")} />
       )}
-      {loginAdmin.isSuccess && (
+      {enrollAdmin.isSuccess && (
         <SuccessToast
           successMsg={"Login Success."}
-          handleClose={() => loginAdmin.reset()}
+          handleClose={() => enrollAdmin.reset()}
         />
       )}
     </div>
   );
 };
 
-export default Login;
+export default Register;

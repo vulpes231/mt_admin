@@ -3,4 +3,8 @@ const style = {
   wrapper: "flex flex-col gap-1",
 };
 
-export { style };
+function getAccessToken() {
+  return sessionStorage.getItem("token") || null;
+}
+
+export { style, getAccessToken };
