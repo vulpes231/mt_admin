@@ -3,9 +3,12 @@ import {
   formatAmount,
   formatDate,
   getAccessToken,
+  getStatusBadge,
+  getTypeBadge,
 } from "../../constant/constant";
 import { useQuery } from "@tanstack/react-query";
 import transactionService from "../../services/transactionService";
+import DeleteTrxModal from "./DeleteTrxModal";
 
 const TransactionTable = () => {
   const token = getAccessToken();
@@ -14,6 +17,11 @@ const TransactionTable = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const itemsPerPage = 10;
+
+  const [action, setAction] = useState("");
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [trxId, setTrxId] = useState("");
 
   const {
     data: transactions,
@@ -25,43 +33,6 @@ const TransactionTable = () => {
     queryKey: ["transactions"],
   });
 
-  // Get status badge style
-  const getStatusBadge = (status) => {
-    const statusLower = status?.toLowerCase();
-    switch (statusLower) {
-      case "completed":
-      case "success":
-        return "bg-green-100 text-green-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "failed":
-      case "declined":
-        return "bg-red-100 text-red-800";
-      case "processing":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  // Get type badge style
-  const getTypeBadge = (type) => {
-    const typeLower = type?.toLowerCase();
-    switch (typeLower) {
-      case "deposit":
-        return "bg-green-100 text-green-800";
-      case "withdrawal":
-        return "bg-red-100 text-red-800";
-      case "transfer":
-        return "bg-blue-100 text-blue-800";
-      case "payment":
-        return "bg-purple-100 text-purple-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  // Filter transactions
   const filteredTransactions = transactions?.filter((trx) => {
     const matchesSearch =
       trx._id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,16 +67,14 @@ const TransactionTable = () => {
   const handleActionChange = (action, transactionId) => {
     switch (action) {
       case "edit":
-        console.log("Edit transaction:", transactionId);
-        // Add edit logic
+        setAction("edit");
+        setTrxId(transactionId);
+        setEditModal(true);
         break;
       case "delete":
-        if (
-          window.confirm("Are you sure you want to delete this transaction?")
-        ) {
-          console.log("Delete transaction:", transactionId);
-          // Add delete logic
-        }
+        setAction("delete");
+        setTrxId(transactionId);
+        setDeleteModal(true);
         break;
       case "view":
         console.log("View transaction:", transactionId);
@@ -287,8 +256,11 @@ const TransactionTable = () => {
                       {trx.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(trx.date || trx.createdAt)}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 ">
+                    <span className="flex items-center gap-2">
+                      <span> {trx.date}</span>
+                      <sub className="font-bold"> {trx.time}</sub>
+                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex items-center justify-center space-x-2">
@@ -459,6 +431,16 @@ const TransactionTable = () => {
             </div>
           </div>
         </div>
+      )}
+      {deleteModal && (
+        <DeleteTrxModal
+          trxId={trxId}
+          onClose={() => {
+            setTrxId("");
+            setAction("");
+            setDeleteModal(false);
+          }}
+        />
       )}
     </div>
   );

@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken, style } from "../../constant/constant";
+import { formatAmount, getAccessToken, style } from "../../constant/constant";
 import {
   CustomInput,
   CustomLabel,
@@ -118,7 +118,8 @@ const TransactionForm = () => {
                 accounts.map((acct) => {
                   return (
                     <option key={acct._id} value={acct._id}>
-                      {acct.accountName} : {acct.balance.available}
+                      {acct.accountName} :{" "}
+                      {formatAmount(acct.balance.available)}
                     </option>
                   );
                 })}
@@ -172,6 +173,7 @@ const TransactionForm = () => {
                 value={validation.values.date}
                 handleChange={validation.handleChange}
                 type={"text"}
+                placeHolder={"mmm dd, yyyy"}
               />
             </div>
             <div className={style.wrapper}>

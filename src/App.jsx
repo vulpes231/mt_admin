@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import {
   Accounts,
+  CreateAccount,
   CreateTransaction,
   CreateUser,
   DashBoard,
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/create-user" element={<CreateUser />} />
         <Route path="/create-transaction" element={<CreateTransaction />} />
+        <Route path="/create-account" element={<CreateAccount />} />
       </Route>
     </Routes>
   );
