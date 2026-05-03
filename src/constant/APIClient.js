@@ -35,6 +35,12 @@ api.interceptors.response.use(
       // localStorage.removeItem("token");
       // window.location.href = "/login";
     }
+
+    if (error.response?.status === 403) {
+      // console.log("Forbidden - redirect to login");
+      sessionStorage.clear();
+      window.location.href = "/";
+    }
     return Promise.reject(error);
   },
 );

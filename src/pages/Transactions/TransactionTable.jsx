@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { getAccessToken } from "../../constant/constant";
+import {
+  formatAmount,
+  formatDate,
+  getAccessToken,
+} from "../../constant/constant";
 import { useQuery } from "@tanstack/react-query";
 import transactionService from "../../services/transactionService";
 
@@ -20,27 +24,6 @@ const TransactionTable = () => {
     enabled: !!token,
     queryKey: ["transactions"],
   });
-
-  // Format currency
-  const formatAmount = (amount) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   // Get status badge style
   const getStatusBadge = (status) => {
@@ -94,7 +77,6 @@ const TransactionTable = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  // Pagination
   const totalPages = Math.ceil(
     (filteredTransactions?.length || 0) / itemsPerPage,
   );
@@ -104,7 +86,6 @@ const TransactionTable = () => {
     startIndex + itemsPerPage,
   );
 
-  // Get unique statuses and types for filters
   const uniqueStatuses = [
     ...new Set(transactions?.map((t) => t.status?.toLowerCase()) || []),
   ];
@@ -210,7 +191,7 @@ const TransactionTable = () => {
             <option value="all">All Status</option>
             {uniqueStatuses.map((status) => (
               <option key={status} value={status}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+                {status?.charAt(0)?.toUpperCase() + status?.slice(1)}
               </option>
             ))}
           </select>
@@ -307,7 +288,7 @@ const TransactionTable = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatDate(trx.createdAt || trx.date)}
+                    {formatDate(trx.date || trx.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex items-center justify-center space-x-2">

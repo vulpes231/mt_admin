@@ -10,4 +10,25 @@ function getAccessToken() {
   return sessionStorage.getItem("token") || null;
 }
 
-export { style, getAccessToken };
+// Format currency
+const formatAmount = (amount) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
+// Format date
+const formatDate = (dateString) => {
+  if (!dateString) return "N/A";
+  return new Date(dateString).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+export { style, getAccessToken, formatAmount, formatDate };

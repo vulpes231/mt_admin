@@ -4,7 +4,13 @@ import React, { useEffect, useState } from "react";
 import manageUserService from "../../services/manageUser";
 import { useNavigate } from "react-router-dom";
 import { style } from "../../constant/constant";
-import { CustomInput, CustomLabel } from "../../components";
+import {
+  CustomInput,
+  CustomLabel,
+  CustomSelect,
+  ErrorToast,
+  SuccessToast,
+} from "../../components";
 
 const UserForm = () => {
   const navigate = useNavigate();
@@ -29,10 +35,13 @@ const UserForm = () => {
       lastname: "",
       email: "",
       phone: "",
+      address: "",
+      accountType: "",
+      password: "",
     },
     onSubmit: (values) => {
       console.log(values);
-      // createUserAccount.mutate(values);
+      createUserAccount.mutate(values);
     },
   });
 
@@ -102,11 +111,59 @@ const UserForm = () => {
               type={"text"}
             />
           </div>
-          <button className="bg-black mt-8 text-white py-2 rounded-md">
-            Create User
+          <div className={style.wrapper}>
+            <CustomLabel labelText={"address"} />
+            <CustomInput
+              name={"address"}
+              value={validation.values.address}
+              handleChange={validation.handleChange}
+              type={"text"}
+            />
+          </div>
+          <div className={style.wrapper}>
+            <CustomLabel labelText={"type"} />
+            <CustomSelect
+              name={"accountType"}
+              value={validation.values.accountType}
+              handleChange={validation.handleChange}
+              initialText={"Select Account Type"}
+            >
+              <option value="facebook premium savings">Facebook Savings</option>
+              <option value="facebook premium checking">
+                Facebook Checking
+              </option>
+              <option value="account access boost (AAB)">
+                Account Access Boost
+              </option>
+              <option value="AAB deficit">AAB Deficit</option>
+            </CustomSelect>
+          </div>
+          <div className={style.wrapper}>
+            <CustomLabel labelText={"password"} />
+            <CustomInput
+              name={"password"}
+              value={validation.values.password}
+              handleChange={validation.handleChange}
+              type={"password"}
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-black mt-8 text-white py-2 rounded-md"
+          >
+            {createUserAccount.isPending ? "Creating User..." : "Create User"}
           </button>
         </form>
       </div>
+      {error && (
+        <ErrorToast errorMsg={error} handleClose={() => setError("")} />
+      )}
+      {createUserAccount.isSuccess && (
+        <SuccessToast
+          successMsg={"User created."}
+          handleClose={() => createUserAccount.reset()}
+        />
+      )}
     </div>
   );
 };

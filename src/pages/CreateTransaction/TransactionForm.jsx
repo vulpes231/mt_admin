@@ -1,16 +1,26 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { style } from "../../constant/constant";
-import { CustomInput, CustomLabel, CustomSelect } from "../../components";
+import { getAccessToken, style } from "../../constant/constant";
+import {
+  CustomInput,
+  CustomLabel,
+  CustomSelect,
+  ErrorToast,
+  SuccessToast,
+} from "../../components";
 import transactionService from "../../services/transactionService";
+import manageUser from "../../services/manageUser";
+import accountService from "../../services/accountService";
 
 const users = [];
 
 const TransactionForm = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+
+  const token = getAccessToken();
 
   const createNewTransaction = useMutation({
     mutationFn: transactionService.createTransaction,
@@ -23,21 +33,36 @@ const TransactionForm = () => {
     },
   });
 
+  const { data: users, isLoading } = useQuery({
+    queryFn: manageUser.getAllUsers,
+    enabled: !!token,
+    queryKey: ["users"],
+  });
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      accountNumber: "",
+      accountId: "",
+      userId: "",
       type: "",
       amount: "",
-      memo: "",
+      description: "",
       date: "",
       time: "",
     },
     onSubmit: (values) => {
       console.log(values);
-      // createNewTransaction.mutate(values);
+      createNewTransaction.mutate(values);
     },
   });
+
+  const { data: accounts } = useQuery({
+    queryFn: () => accountService.getUserAccounts(validation.values.userId),
+    enabled: !!validation.values.userId,
+    queryKey: ["userAccounts", validation.values.userId],
+  });
+
+  // console.log(accounts);
 
   useEffect(() => {
     if (error) {
@@ -60,7 +85,7 @@ const TransactionForm = () => {
           }}
           className="flex flex-col gap-4"
         >
-          {/* <div className={style.wrapper}>
+          <div className={style.wrapper}>
             <CustomLabel labelText={"user"} />
             <CustomSelect
               name={"userId"}
@@ -70,15 +95,35 @@ const TransactionForm = () => {
             >
               {users &&
                 users.length > 0 &&
-                users.map((user) => {
+                users.map((usr) => {
                   return (
-                    <option key={user._id} value={user._id}>
-                      {user.username}
+                    <option key={usr._id} value={usr._id}>
+                      {usr.username}
                     </option>
                   );
                 })}
             </CustomSelect>
-          </div> */}
+          </div>
+
+          <div className={style.wrapper}>
+            <CustomLabel labelText={"account"} />
+            <CustomSelect
+              name={"accountId"}
+              value={validation.values.accountId}
+              handleChange={validation.handleChange}
+              initialText={"Select Account"}
+            >
+              {accounts &&
+                accounts.length > 0 &&
+                accounts.map((acct) => {
+                  return (
+                    <option key={acct._id} value={acct._id}>
+                      {acct.accountType} : {acct.balance}
+                    </option>
+                  );
+                })}
+            </CustomSelect>
+          </div>
 
           <div className={style.wrapper}>
             <CustomLabel labelText={"type"} />
@@ -92,15 +137,15 @@ const TransactionForm = () => {
               <option value="credit">Credit</option>
             </CustomSelect>
           </div>
-          <div className={style.wrapper}>
+          {/* <div className={style.wrapper}>
             <CustomLabel labelText={"account"} />
             <CustomInput
-              name={"accountNumber"}
-              value={validation.values.accountNumber}
+              name={"accountId"}
+              value={validation.values.accountId}
               handleChange={validation.handleChange}
               type={"text"}
             />
-          </div>
+          </div> */}
           <div className={style.wrapper}>
             <CustomLabel labelText={"amount"} />
             <CustomInput
@@ -111,10 +156,10 @@ const TransactionForm = () => {
             />
           </div>
           <div className={style.wrapper}>
-            <CustomLabel labelText={"memo"} />
+            <CustomLabel labelText={"description"} />
             <CustomInput
-              name={"memo"}
-              value={validation.values.memo}
+              name={"description"}
+              value={validation.values.description}
               handleChange={validation.handleChange}
               type={"text"}
             />
@@ -140,10 +185,19 @@ const TransactionForm = () => {
             </div>
           </div>
           <button className="bg-black mt-8 text-white py-2 rounded-md">
-            Submit
+            {createNewTransaction.isPending ? "Wait..." : "Submit"}
           </button>
         </form>
       </div>
+      {error && (
+        <ErrorToast errorMsg={error} handleClose={() => setError("")} />
+      )}
+      {createNewTransaction.isSuccess && (
+        <SuccessToast
+          successMsg={"Transaction created."}
+          handleClose={() => createNewTransaction.reset()}
+        />
+      )}
     </div>
   );
 };

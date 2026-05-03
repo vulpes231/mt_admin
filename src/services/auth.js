@@ -25,7 +25,7 @@ class authService {
 
   async logoutAdmin() {
     try {
-      const response = await api.put(`/logout`);
+      const response = await api.put(`/manage-admin/logout`);
       return response.data;
     } catch (logoutError) {
       this.handleError(logoutError, "Failed to logout.");
