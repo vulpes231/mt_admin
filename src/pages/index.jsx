@@ -1,3 +1,4 @@
+import Accounts from "./Accounts";
 import Login from "./Authentication/Login";
 import Register from "./Authentication/Register";
 import CreateTransaction from "./CreateTransaction";
@@ -14,4 +15,5 @@ export {
   Transactions,
   CreateTransaction,
   CreateUser,
+  Accounts,
 };

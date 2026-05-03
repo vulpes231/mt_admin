@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { getAccessToken, style } from "../../constant/constant";
+import { formatAmount, getAccessToken, style } from "../../constant/constant";
 import { useQuery } from "@tanstack/react-query";
-import manageUser from "../../services/manageUser";
-import DeleteUserModal from "./DeleteUserModal";
 
-const UserTable = () => {
+import accountService from "../../services/accountService";
+
+const AccountTable = () => {
   const token = getAccessToken();
   const [searchTerm, setSearchTerm] = useState("");
   const [userId, setUserId] = useState("");
@@ -15,24 +15,22 @@ const UserTable = () => {
   const itemsPerPage = 10;
 
   const {
-    data: users,
+    data: accounts,
     isLoading,
     error,
   } = useQuery({
-    queryFn: manageUser.getAllUsers,
+    queryFn: accountService.getAllAccounts,
     enabled: !!token,
-    queryKey: ["users"],
+    queryKey: ["accounts"],
   });
 
-  const filteredUsers = users?.filter((user) =>
-    `${user.firstname} ${user.lastname} ${user.username} ${user.email}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase()),
+  const filteredAccounts = accounts?.filter((acct) =>
+    `${acct.accountName}`.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const totalPages = Math.ceil((filteredUsers?.length || 0) / itemsPerPage);
+  const totalPages = Math.ceil((filteredAccounts?.length || 0) / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedUsers = filteredUsers?.slice(
+  const paginatedAccounts = filteredAccounts?.slice(
     startIndex,
     startIndex + itemsPerPage,
   );
@@ -73,7 +71,7 @@ const UserTable = () => {
         <strong className="font-bold">Error!</strong>
         <span className="block sm:inline">
           {" "}
-          Failed to load users. Please try again.
+          Failed to load accounts. Please try again.
         </span>
       </div>
     );
@@ -85,12 +83,12 @@ const UserTable = () => {
       <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-800">
-            Users Management
+            Account Management
           </h2>
           <div className="relative">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search accounts..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -121,16 +119,16 @@ const UserTable = () => {
           <thead>
             <tr className="bg-gradient-to-r from-gray-800 to-gray-900 text-white">
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                Full Name
+                Account ID
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                Username
+                Account Name
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                Email
+                User ID
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">
-                Phone
+                Account Balance
               </th>
               <th className="px-6 py-4 text-center text-sm font-semibold uppercase tracking-wider">
                 Actions
@@ -138,64 +136,43 @@ const UserTable = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {paginatedUsers && paginatedUsers.length > 0 ? (
-              paginatedUsers.map((user, index) => (
+            {paginatedAccounts && paginatedAccounts.length > 0 ? (
+              paginatedAccounts.map((acct, index) => (
                 <tr
-                  key={user._id}
+                  key={acct._id}
                   className="hover:bg-gray-50 transition-colors duration-200"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                          {user.firstname?.[0]}
-                          {user.lastname?.[0]}
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 capitalize">
-                          {user.firstname} {user.lastname}
+                        <div className="h-10 w-10 rounded-full flex items-center justify-centerfont-semibold">
+                          {acct._id.slice(0, 10)}...
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">
-                      @{user.username}
+                    <span className="text-sm text-gray-600 capitalize">
+                      {acct.accountName}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <a
-                      href={`mailto:${user.email}`}
-                      className="text-sm text-blue-600 hover:text-blue-800"
-                    >
-                      {user.email}
-                    </a>
+                    <span className="text-sm text-gray-600">{acct.userId}</span>
                   </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <svg
-                        className="h-4 w-4 text-gray-400 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                      <span
+                        className={`text-sm font-semibold ${acct.balance.available < 0 ? "text-red-600" : "text-green-600"}`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                        />
-                      </svg>
-                      <span className="text-sm text-gray-600">
-                        {user.phone || "N/A"}
+                        {formatAmount(acct.balance.available)}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex items-center justify-center space-x-2">
                       <button
-                        onClick={() => handleActionChange("view", user._id)}
+                        onClick={() => handleActionChange("view", acct._id)}
                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                         title="View"
                       >
@@ -220,7 +197,7 @@ const UserTable = () => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleActionChange("edit", user._id)}
+                        onClick={() => handleActionChange("edit", acct._id)}
                         className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors duration-200"
                         title="Edit"
                       >
@@ -239,7 +216,7 @@ const UserTable = () => {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleActionChange("delete", user._id)}
+                        onClick={() => handleActionChange("delete", acct._id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
                         title="Delete"
                       >
@@ -278,7 +255,7 @@ const UserTable = () => {
                     />
                   </svg>
                   <h3 className="mt-2 text-sm font-medium text-gray-900">
-                    No users found
+                    No Account found
                   </h3>
                   <p className="mt-1 text-sm text-gray-500">
                     Try adjusting your search or refresh the page.
@@ -296,8 +273,11 @@ const UserTable = () => {
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-700">
               Showing {startIndex + 1} to{" "}
-              {Math.min(startIndex + itemsPerPage, filteredUsers?.length || 0)}{" "}
-              of {filteredUsers?.length} results
+              {Math.min(
+                startIndex + itemsPerPage,
+                filteredAccounts?.length || 0,
+              )}{" "}
+              of {filteredAccounts?.length} results
             </div>
             <div className="flex space-x-2">
               <button
@@ -335,7 +315,7 @@ const UserTable = () => {
           </div>
         </div>
       )}
-      {deleteModal && (
+      {/* {deleteModal && (
         <DeleteUserModal
           userId={userId}
           onClose={() => {
@@ -344,9 +324,9 @@ const UserTable = () => {
             setDeleteModal(false);
           }}
         />
-      )}
+      )} */}
     </div>
   );
 };
 
-export default UserTable;
+export default AccountTable;

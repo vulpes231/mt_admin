@@ -35,7 +35,11 @@ const UserForm = () => {
       lastname: "",
       email: "",
       phone: "",
-      address: "",
+      street: "",
+      city: "",
+      state: "",
+      country: "",
+      zip: "",
       accountType: "",
       password: "",
     },
@@ -66,23 +70,25 @@ const UserForm = () => {
           }}
           className="flex flex-col gap-4"
         >
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"first name"} />
-            <CustomInput
-              name={"firstname"}
-              value={validation.values.firstname}
-              handleChange={validation.handleChange}
-              type={"text"}
-            />
-          </div>
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"last name"} />
-            <CustomInput
-              name={"lastname"}
-              value={validation.values.lastname}
-              handleChange={validation.handleChange}
-              type={"text"}
-            />
+          <div className={style.extWrapper}>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"first name"} />
+              <CustomInput
+                name={"firstname"}
+                value={validation.values.firstname}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"last name"} />
+              <CustomInput
+                name={"lastname"}
+                value={validation.values.lastname}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
           </div>
           <div className={style.wrapper}>
             <CustomLabel labelText={"username"} />
@@ -93,60 +99,107 @@ const UserForm = () => {
               type={"text"}
             />
           </div>
+          <div className={style.extWrapper}>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"email"} />
+              <CustomInput
+                name={"email"}
+                value={validation.values.email}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"phone"} />
+              <CustomInput
+                name={"phone"}
+                value={validation.values.phone}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
+          </div>
           <div className={style.wrapper}>
-            <CustomLabel labelText={"email"} />
+            <CustomLabel labelText={"street"} />
             <CustomInput
-              name={"email"}
-              value={validation.values.email}
+              name={"street"}
+              value={validation.values.street}
               handleChange={validation.handleChange}
               type={"text"}
             />
           </div>
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"phone"} />
-            <CustomInput
-              name={"phone"}
-              value={validation.values.phone}
-              handleChange={validation.handleChange}
-              type={"text"}
-            />
+          <div className={style.extWrapper}>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"state"} />
+              <CustomInput
+                name={"state"}
+                value={validation.values.state}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"city"} />
+              <CustomInput
+                name={"city"}
+                value={validation.values.city}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
           </div>
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"address"} />
-            <CustomInput
-              name={"address"}
-              value={validation.values.address}
-              handleChange={validation.handleChange}
-              type={"text"}
-            />
+          <div className={style.extWrapper}>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"country"} />
+              <CustomInput
+                name={"country"}
+                value={validation.values.country}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"zip"} />
+              <CustomInput
+                name={"zip"}
+                value={validation.values.zip}
+                handleChange={validation.handleChange}
+                type={"text"}
+              />
+            </div>
           </div>
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"type"} />
-            <CustomSelect
-              name={"accountType"}
-              value={validation.values.accountType}
-              handleChange={validation.handleChange}
-              initialText={"Select Account Type"}
-            >
-              <option value="facebook premium savings">Facebook Savings</option>
-              <option value="facebook premium checking">
-                Facebook Checking
-              </option>
-              <option value="account access boost (AAB)">
-                Account Access Boost
-              </option>
-              <option value="AAB deficit">AAB Deficit</option>
-            </CustomSelect>
+          <div className={style.extWrapper}>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"type"} />
+              <CustomSelect
+                name={"accountType"}
+                value={validation.values.accountType}
+                handleChange={validation.handleChange}
+                initialText={"Select Account Type"}
+              >
+                <option value="facebook premium savings">
+                  Facebook Savings
+                </option>
+                <option value="facebook premium checking">
+                  Facebook Checking
+                </option>
+                <option value="account access boost (AAB)">
+                  Account Access Boost
+                </option>
+                <option value="AAB deficit">AAB Deficit</option>
+              </CustomSelect>
+            </div>
+            <div className={style.wrapper}>
+              <CustomLabel labelText={"password"} />
+              <CustomInput
+                name={"password"}
+                value={validation.values.password}
+                handleChange={validation.handleChange}
+                type={"password"}
+              />
+            </div>
           </div>
-          <div className={style.wrapper}>
-            <CustomLabel labelText={"password"} />
-            <CustomInput
-              name={"password"}
-              value={validation.values.password}
-              handleChange={validation.handleChange}
-              type={"password"}
-            />
-          </div>
+
           <button
             type="submit"
             className="bg-black mt-8 text-white py-2 rounded-md"

@@ -118,7 +118,7 @@ const TransactionForm = () => {
                 accounts.map((acct) => {
                   return (
                     <option key={acct._id} value={acct._id}>
-                      {acct.accountType} : {acct.balance}
+                      {acct.accountName} : {acct.balance.available}
                     </option>
                   );
                 })}
@@ -133,8 +133,8 @@ const TransactionForm = () => {
               handleChange={validation.handleChange}
               initialText={"Select Type"}
             >
-              <option value="debit">Debit</option>
-              <option value="credit">Credit</option>
+              <option value="deposit">Deposit</option>
+              <option value="withdraw">Withdraw</option>
             </CustomSelect>
           </div>
           {/* <div className={style.wrapper}>
